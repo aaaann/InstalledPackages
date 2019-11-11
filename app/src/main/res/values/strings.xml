@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Installed Packages</string>
+    <string name="loading_process">Loading...</string>
+</resources>
