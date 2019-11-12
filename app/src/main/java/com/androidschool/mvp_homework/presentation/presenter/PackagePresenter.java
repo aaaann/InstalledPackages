@@ -41,7 +41,7 @@ public class PackagePresenter {
     /**
      * Метод для загрузки данных в ассинхронном режиме.
      */
-    public void loadDataAsync() {
+    public void loadDataAsync(boolean isNeedSystem) {
         if (mMainActivityWeakReference.get() != null) {
             mMainActivityWeakReference.get().showProgress();
         }
@@ -53,7 +53,7 @@ public class PackagePresenter {
             }
         };
 
-        mPackageInstalledRepository.loadDataAsync(true, onLoadingFinishListener);
+        mPackageInstalledRepository.loadDataAsync(isNeedSystem, onLoadingFinishListener);
     }
 
     /**

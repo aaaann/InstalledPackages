@@ -36,21 +36,21 @@ public class PackageModelRepository {
     public List<PackageModel> getData(boolean isSystem) {
         List<PackageModel> installedPackageModels = new ArrayList<>();
 
-        for (String packageName : getInstalledPackages(isSystem)) {
+        for (ResolveInfo resolveInfo : getInstalledPackages(isSystem)) {
+            String packageName = resolveInfo.activityInfo.applicationInfo.packageName;
             getAppSize(packageName);
 
             PackageModel installedPackageModel = new PackageModel(
-                    getAppName(packageName), packageName, getAppIcon(packageName));
+                    getAppName(packageName), packageName, getAppIcon(packageName), isSystemPackage(resolveInfo));
 
             installedPackageModels.add(installedPackageModel);
         }
 
-        //todo: sort data with the given mode in parameters (add)
         return installedPackageModels;
     }
 
-    private List<String> getInstalledPackages(boolean isSystem) {
-        List<String> apkPackageName = new ArrayList<>();
+    private List<ResolveInfo> getInstalledPackages(boolean isSystem) {
+        List<ResolveInfo> resolveInfos = new ArrayList<>();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -60,12 +60,13 @@ public class PackageModelRepository {
         for (ResolveInfo resolveInfo : resolveInfoList) {
 
             if (isSystem || !isSystemPackage(resolveInfo)) {
-                ActivityInfo activityInfo = resolveInfo.activityInfo;
-                apkPackageName.add(activityInfo.applicationInfo.packageName);
+                //ActivityInfo activityInfo = resolveInfo.activityInfo;
+                //apkPackageName.add(activityInfo.applicationInfo.packageName);
+                resolveInfos.add(resolveInfo);
             }
         }
 
-        return apkPackageName;
+        return resolveInfos;
     }
 
     private String getAppName(@NonNull String packageName) {
@@ -105,6 +106,11 @@ public class PackageModelRepository {
         return 0;
     }
 
+    /**
+     * проверяет, системное ли приложение
+     * @param resolveInfo
+     * @return признак системности приложения
+     */
     private boolean isSystemPackage(@NonNull ResolveInfo resolveInfo) {
         return ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }

@@ -7,22 +7,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 
 import com.androidschool.mvp_homework.R;
 import com.androidschool.mvp_homework.data.model.PackageModel;
 import com.androidschool.mvp_homework.data.repository.PackageModelRepository;
 import com.androidschool.mvp_homework.presentation.presenter.PackagePresenter;
+import com.androidschool.mvp_homework.presentation.view.adapter.InstalledPackagesAdapter;
+import com.androidschool.mvp_homework.presentation.view.adapter.SortModeSpinnerAdapter;
+import com.androidschool.mvp_homework.presentation.view.enums.SortMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements IMainView{
+public class MainActivity extends AppCompatActivity implements IMainView {
 
     private RecyclerView mRecyclerView;
     private View mProgressFrameLayout;
     private FloatingActionButton mFabReload;
-    private Spinner mSortSpinner;
+    private InstalledPackagesAdapter mAdapter = new InstalledPackagesAdapter();
+    private Spinner mSortModeSpinner;
+    private CheckBox mNeedSystemCheckBox;
 
     private PackagePresenter mMainPresenter;
 
@@ -39,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements IMainView{
     protected void onStart() {
         super.onStart();
 
-        mMainPresenter.loadDataAsync();
+        mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked());
     }
 
     @Override
@@ -64,11 +71,14 @@ public class MainActivity extends AppCompatActivity implements IMainView{
         mRecyclerView.setLayoutManager(layoutManager);
         mFabReload = findViewById(R.id.fab_reload);
         mFabReload.setOnClickListener(v -> {
-            mMainPresenter.loadDataAsync();
+            mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked());
         });
 
-        mSortSpinner=findViewById(R.id.spinner_sort);
+        mSortModeSpinner = findViewById(R.id.spinner_sort);
+        initSortSpinner();
 
+        mNeedSystemCheckBox=findViewById(R.id.check_is_system);
+        //todo: set clickListener
 
         mProgressFrameLayout = findViewById(R.id.progress_frame_layout);
     }
@@ -85,9 +95,23 @@ public class MainActivity extends AppCompatActivity implements IMainView{
 
     @Override
     public void showData(@NonNull List<PackageModel> modelList) {
-        InstalledPackagesAdapter adapter =
-                new InstalledPackagesAdapter(modelList);
+        mAdapter.setPackages(modelList);
 
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void initSortSpinner() {
+        mSortModeSpinner.setAdapter(new SortModeSpinnerAdapter());
+        mSortModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SortMode selectedDisplayMode = SortMode.values()[position];
+                mAdapter.setSortMode(selectedDisplayMode);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 }
