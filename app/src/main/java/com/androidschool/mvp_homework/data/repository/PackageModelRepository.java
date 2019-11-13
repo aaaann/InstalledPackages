@@ -2,7 +2,6 @@ package com.androidschool.mvp_homework.data.repository;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -50,23 +49,23 @@ public class PackageModelRepository {
     }
 
     private List<ResolveInfo> getInstalledPackages(boolean isSystem) {
-        List<ResolveInfo> resolveInfos = new ArrayList<>();
+        //List<ResolveInfo> resolveInfos = new ArrayList<>();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
         List<ResolveInfo> resolveInfoList = mPackageManager.queryIntentActivities(intent, 0);
 
-        for (ResolveInfo resolveInfo : resolveInfoList) {
+//        for (ResolveInfo resolveInfo : resolveInfoList) {
+//
+//            if (isSystem || !isSystemPackage(resolveInfo)) {
+//                //ActivityInfo activityInfo = resolveInfo.activityInfo;
+//                //apkPackageName.add(activityInfo.applicationInfo.packageName);
+//                resolveInfos.add(resolveInfo);
+//            }
+//        }
 
-            if (isSystem || !isSystemPackage(resolveInfo)) {
-                //ActivityInfo activityInfo = resolveInfo.activityInfo;
-                //apkPackageName.add(activityInfo.applicationInfo.packageName);
-                resolveInfos.add(resolveInfo);
-            }
-        }
-
-        return resolveInfos;
+        return /*resolveInfos*/ resolveInfoList;
     }
 
     private String getAppName(@NonNull String packageName) {

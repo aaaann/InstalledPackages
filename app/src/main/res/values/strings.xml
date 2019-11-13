@@ -3,4 +3,7 @@
     <string name="loading_process">Loading...</string>
     <string name="sort_by_app_name">A-Z по имени приложения</string>
     <string name="sort_by_package_name">A-Z по имени пакета</string>
+    <string name="without_sort">Без группировки</string>
+    <string name="sorting">Сортировка</string>
+    <string name="show_system">Показать системные</string>
 </resources>

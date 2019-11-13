@@ -1,18 +1,16 @@
 package com.androidschool.mvp_homework.presentation.view;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.androidschool.mvp_homework.R;
-import com.androidschool.mvp_homework.data.model.PackageModel;
 import com.androidschool.mvp_homework.data.repository.PackageModelRepository;
 import com.androidschool.mvp_homework.presentation.presenter.PackagePresenter;
 import com.androidschool.mvp_homework.presentation.view.adapter.InstalledPackagesAdapter;
@@ -20,14 +18,12 @@ import com.androidschool.mvp_homework.presentation.view.adapter.SortModeSpinnerA
 import com.androidschool.mvp_homework.presentation.view.enums.SortMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity implements IMainView {
 
     private RecyclerView mRecyclerView;
     private View mProgressFrameLayout;
     private FloatingActionButton mFabReload;
-    private InstalledPackagesAdapter mAdapter = new InstalledPackagesAdapter();
+    private InstalledPackagesAdapter mAdapter;
     private Spinner mSortModeSpinner;
     private CheckBox mNeedSystemCheckBox;
 
@@ -38,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements IMainView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initViews();
         providePresenter();
+        initViews();
     }
 
     @Override
@@ -63,22 +59,26 @@ public class MainActivity extends AppCompatActivity implements IMainView {
         mMainPresenter = new PackagePresenter(this, packageInstalledRepository);
     }
 
-    private void initViews() {
+    private void initRecyclerView() {
         LinearLayoutManager layoutManager = new
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-
+        mAdapter = new InstalledPackagesAdapter(mMainPresenter);
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void initViews() {
+        initRecyclerView();
         mFabReload = findViewById(R.id.fab_reload);
         mFabReload.setOnClickListener(v -> {
-            mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked());
+            mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked()); //todo: remove parameter
         });
 
-        mSortModeSpinner = findViewById(R.id.spinner_sort);
         initSortSpinner();
 
         mNeedSystemCheckBox=findViewById(R.id.check_is_system);
-        //todo: set clickListener
+        mNeedSystemCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> mMainPresenter.refreshShowSystem(isChecked));
 
         mProgressFrameLayout = findViewById(R.id.progress_frame_layout);
     }
@@ -94,19 +94,18 @@ public class MainActivity extends AppCompatActivity implements IMainView {
     }
 
     @Override
-    public void showData(@NonNull List<PackageModel> modelList) {
-        mAdapter.setPackages(modelList);
-
-        mRecyclerView.setAdapter(mAdapter);
+    public void showData() {
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initSortSpinner() {
+        mSortModeSpinner = findViewById(R.id.spinner_sort);
         mSortModeSpinner.setAdapter(new SortModeSpinnerAdapter());
         mSortModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SortMode selectedDisplayMode = SortMode.values()[position];
-                mAdapter.setSortMode(selectedDisplayMode);
+                mMainPresenter.refreshSort(selectedDisplayMode);
             }
 
             @Override

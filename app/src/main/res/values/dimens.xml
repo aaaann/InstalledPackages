@@ -6,4 +6,6 @@
     <dimen name="icon_size">48dp</dimen>
     <dimen name="padding_xsmall">4dp</dimen>
     <dimen name="margin_medium">10dp</dimen>
+    <dimen name="margin_small">2dp</dimen>
+    <dimen name="padding_medium">10dp</dimen>
 </resources>

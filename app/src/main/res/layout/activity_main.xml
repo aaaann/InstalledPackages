@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.MainActivity"
-    android:padding="16dp">
+    android:padding="@dimen/padding_medium"
+    tools:context=".presentation.view.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,38 +15,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_margin="@dimen/margin_medium"
-            >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    tools:text="Показать системыне" />
+                    android:text="@string/show_system"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:textAppearance="@style/BaseTextAppearance" />
 
                 <CheckBox
                     android:id="@+id/check_is_system"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:checked="true"/>
+                    android:checked="true" />
             </LinearLayout>
 
-            <Spinner
-
-                android:id="@+id/spinner_sort"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="сортировка A-Z" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:text="@string/sorting"
+                    android:textAppearance="@style/BaseTextAppearance" />
+
+                <Spinner
+
+                    android:id="@+id/spinner_sort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -55,19 +68,25 @@
             android:layout_height="1dp"
             android:background="#000000" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_reload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_replay_white_24dp"
-            app:fabSize="normal" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_reload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="@dimen/margin_medium"
+                android:src="@drawable/ic_replay_white_24dp"
+                app:fabSize="normal" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     </LinearLayout>
 
     <RelativeLayout

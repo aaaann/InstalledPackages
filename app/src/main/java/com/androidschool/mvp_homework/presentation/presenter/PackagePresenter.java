@@ -5,17 +5,25 @@ import androidx.annotation.NonNull;
 import com.androidschool.mvp_homework.data.model.PackageModel;
 import com.androidschool.mvp_homework.data.repository.PackageModelRepository;
 import com.androidschool.mvp_homework.presentation.view.IMainView;
+import com.androidschool.mvp_homework.presentation.view.IPackageRowView;
+import com.androidschool.mvp_homework.presentation.view.enums.SortMode;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PackagePresenter {
     private final WeakReference<IMainView> mMainActivityWeakReference;
-
     private final PackageModelRepository mPackageInstalledRepository;
+    private List<PackageModel> mPackageModels = new ArrayList<>();
+    private List<PackageModel> mPackageModelsAll = new ArrayList<>();
+    private SortMode mSortMode = SortMode.SORT_BY_APP_NAME;
+    private boolean mIsNeedSystem = true;
+
 
     public PackagePresenter(@NonNull IMainView mainActivity,
-                                     @NonNull PackageModelRepository packageInstalledRepository) {
+                            @NonNull PackageModelRepository packageInstalledRepository) {
         mMainActivityWeakReference = new WeakReference<>(mainActivity);
         mPackageInstalledRepository = packageInstalledRepository;
     }
@@ -29,12 +37,12 @@ public class PackagePresenter {
             mMainActivityWeakReference.get().showProgress();
         }
 
-        List<PackageModel> data = mPackageInstalledRepository.getData(true);
+        mPackageModels = mPackageInstalledRepository.getData(true);
 
         if (mMainActivityWeakReference.get() != null) {
             mMainActivityWeakReference.get().hideProgress();
 
-            mMainActivityWeakReference.get().showData(data);
+            mMainActivityWeakReference.get().showData();
         }
     }
 
@@ -49,7 +57,9 @@ public class PackagePresenter {
         PackageModelRepository.OnLoadingFinishListener onLoadingFinishListener = packageModels -> {
             if (mMainActivityWeakReference.get() != null) {
                 mMainActivityWeakReference.get().hideProgress();
-                mMainActivityWeakReference.get().showData(packageModels);
+                mPackageModelsAll = packageModels;
+                mPackageModels = packageModels;
+                refreshShowSystem(mIsNeedSystem);
             }
         };
 
@@ -61,5 +71,60 @@ public class PackagePresenter {
      */
     public void detachView() {
         mMainActivityWeakReference.clear();
+    }
+
+    public void onBindPackageRowViewAtPosition(int position, IPackageRowView rowView) {
+        PackageModel model = mPackageModels.get(position);
+        rowView.setAppName(model.getAppName());
+        rowView.setAppPackageName(model.getAppPackageName());
+        rowView.setAppIcon(model.getAppIcon());
+        rowView.setSystemText(model.isSystem() ? "system" : null);
+    }
+
+    public int getPackagesRowsCount() {
+        return mPackageModels.size();
+    }
+
+    public void refreshSort(SortMode sortMode) {
+        mSortMode = sortMode;
+        switch (mSortMode) {
+            case SORT_BY_APP_NAME:
+                sortByAppName(mPackageModels);
+                break;
+            case SORT_BY_PACKAGE_NAME:
+                sortByPackageName(mPackageModels);
+                break;
+            default:
+                break;
+        }
+        mMainActivityWeakReference.get().showData();
+    }
+
+    public void refreshShowSystem(boolean isNeedSystem) {
+        mIsNeedSystem = isNeedSystem;
+        mPackageModels = mIsNeedSystem ? mPackageModelsAll : getNotSystem();
+
+        refreshSort(mSortMode);
+    }
+
+    private void sortByAppName(List<PackageModel> packageModels) {
+        Collections.sort(packageModels, (o1, o2) -> o1.getAppName().compareTo(o2.getAppName()));
+        //packageModels.sort(Comparator.comparing(PackageModel::getAppName));
+    }
+
+    private void sortByPackageName(List<PackageModel> packageModels) {
+        Collections.sort(packageModels, (o1, o2) -> o1.getAppPackageName().compareTo(o2.getAppPackageName()));
+        //packageModels.sort(Comparator.comparing(PackageModel::getAppPackageName));
+    }
+
+    private List<PackageModel> getNotSystem() {
+        //filter
+        List<PackageModel> packageModels = new ArrayList<>();
+        for (PackageModel packageModel : mPackageModelsAll) {
+            if (!packageModel.isSystem())
+                packageModels.add(packageModel);
+        }
+
+        return packageModels;
     }
 }
