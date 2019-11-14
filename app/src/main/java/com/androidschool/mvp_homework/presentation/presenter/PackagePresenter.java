@@ -21,6 +21,9 @@ public class PackagePresenter {
     private SortMode mSortMode = SortMode.SORT_BY_APP_NAME;
     private boolean mIsNeedSystem = true;
 
+    public void setPackageModels(List<PackageModel> packageModels) {
+        this.mPackageModels = packageModels;
+    }
 
     public PackagePresenter(@NonNull IMainView mainActivity,
                             @NonNull PackageModelRepository packageInstalledRepository) {
@@ -37,7 +40,7 @@ public class PackagePresenter {
             mMainActivityWeakReference.get().showProgress();
         }
 
-        mPackageModels = mPackageInstalledRepository.getData(true);
+        mPackageModels = mPackageInstalledRepository.getData();
 
         if (mMainActivityWeakReference.get() != null) {
             mMainActivityWeakReference.get().hideProgress();
@@ -49,7 +52,7 @@ public class PackagePresenter {
     /**
      * Метод для загрузки данных в ассинхронном режиме.
      */
-    public void loadDataAsync(boolean isNeedSystem) {
+    public void loadDataAsync() {
         if (mMainActivityWeakReference.get() != null) {
             mMainActivityWeakReference.get().showProgress();
         }
@@ -63,7 +66,7 @@ public class PackagePresenter {
             }
         };
 
-        mPackageInstalledRepository.loadDataAsync(isNeedSystem, onLoadingFinishListener);
+        mPackageInstalledRepository.loadDataAsync(onLoadingFinishListener);
     }
 
     /**
@@ -78,7 +81,7 @@ public class PackagePresenter {
         rowView.setAppName(model.getAppName());
         rowView.setAppPackageName(model.getAppPackageName());
         rowView.setAppIcon(model.getAppIcon());
-        rowView.setSystemText(model.isSystem() ? "system" : null);
+        rowView.setSystemText(model.getSystemLabel());
     }
 
     public int getPackagesRowsCount() {

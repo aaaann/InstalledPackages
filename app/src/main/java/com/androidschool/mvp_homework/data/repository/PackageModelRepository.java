@@ -27,20 +27,21 @@ public class PackageModelRepository {
         mPackageManager = context.getPackageManager();
     }
 
-    public void loadDataAsync(boolean isSystem, @NonNull OnLoadingFinishListener onLoadingFinishListener) {
+    public void loadDataAsync(@NonNull OnLoadingFinishListener onLoadingFinishListener) {
         LoadingPackagesAsyncTask loadingPackagesAsyncTask = new LoadingPackagesAsyncTask(onLoadingFinishListener);
-        loadingPackagesAsyncTask.execute(isSystem);
+        loadingPackagesAsyncTask.execute();
     }
 
-    public List<PackageModel> getData(boolean isSystem) {
+    public List<PackageModel> getData() {
         List<PackageModel> installedPackageModels = new ArrayList<>();
 
-        for (ResolveInfo resolveInfo : getInstalledPackages(isSystem)) {
+        for (ResolveInfo resolveInfo : getInstalledPackages()) {
             String packageName = resolveInfo.activityInfo.applicationInfo.packageName;
             getAppSize(packageName);
 
             PackageModel installedPackageModel = new PackageModel(
-                    getAppName(packageName), packageName, getAppIcon(packageName), isSystemPackage(resolveInfo));
+                    getAppName(packageName), packageName, getAppIcon(packageName), isSystemPackage(resolveInfo),
+                    isSystemPackage(resolveInfo) ? mContext.getString(R.string.system_text) : mContext.getString(R.string.not_system_text));
 
             installedPackageModels.add(installedPackageModel);
         }
@@ -48,7 +49,7 @@ public class PackageModelRepository {
         return installedPackageModels;
     }
 
-    private List<ResolveInfo> getInstalledPackages(boolean isSystem) {
+    private List<ResolveInfo> getInstalledPackages() {
         //List<ResolveInfo> resolveInfos = new ArrayList<>();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -107,6 +108,7 @@ public class PackageModelRepository {
 
     /**
      * проверяет, системное ли приложение
+     *
      * @param resolveInfo
      * @return признак системности приложения
      */
@@ -114,7 +116,7 @@ public class PackageModelRepository {
         return ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }
 
-    private class LoadingPackagesAsyncTask extends AsyncTask<Boolean, Void, List<PackageModel>> {
+    private class LoadingPackagesAsyncTask extends AsyncTask<Void, Void, List<PackageModel>> {
 
         private final OnLoadingFinishListener mOnLoadingFinishListener;
 
@@ -130,8 +132,8 @@ public class PackageModelRepository {
         }
 
         @Override
-        protected List<PackageModel> doInBackground(Boolean... booleans) {
-            return getData(booleans[0]);
+        protected List<PackageModel> doInBackground(Void... voids) {
+            return getData();
         }
     }
 

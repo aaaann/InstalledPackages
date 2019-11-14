@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements IMainView {
     protected void onStart() {
         super.onStart();
 
-        mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked());
+        mMainPresenter.loadDataAsync();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements IMainView {
         initRecyclerView();
         mFabReload = findViewById(R.id.fab_reload);
         mFabReload.setOnClickListener(v -> {
-            mMainPresenter.loadDataAsync(mNeedSystemCheckBox.isChecked()); //todo: remove parameter
+            mMainPresenter.loadDataAsync();
         });
 
         initSortSpinner();

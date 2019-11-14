@@ -6,4 +6,6 @@
     <string name="without_sort">Без группировки</string>
     <string name="sorting">Сортировка</string>
     <string name="show_system">Показать системные</string>
+    <string name="system_text">system</string>
+    <string name="not_system_text" />
 </resources>
